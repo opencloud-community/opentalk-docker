@@ -3,7 +3,7 @@ version: '3'
 services:
   # PostgreSQL Database
   postgres:
-    image: postgres:14
+    image: postgres:15-alpine
     container_name: opentalk-postgres
     profiles: ["core", "database"]
     environment:
@@ -23,7 +23,7 @@ services:
 
   # Redis - For multi-node setups
   redis:
-    image: redis:alpine
+    image: redis:7-alpine
     container_name: opentalk-redis
     profiles: ["core", "redis"]
     ports:
@@ -34,7 +34,7 @@ services:
 
   # MinIO - Object Storage
   minio:
-    image: minio/minio:latest
+    image: minio/minio:RELEASE.2023-07-21T21-12-44Z
     container_name: opentalk-minio
     profiles: ["core", "storage"]
     command: server /data --console-address ":9001"
@@ -70,7 +70,7 @@ services:
 
   # Keycloak - Authentication
   keycloak:
-    image: quay.io/keycloak/keycloak:latest
+    image: quay.io/keycloak/keycloak:20.0
     container_name: opentalk-keycloak
     profiles: ["core", "auth"]
     command: start-dev
@@ -94,7 +94,7 @@ services:
 
   # LiveKit - WebRTC SFU
   livekit:
-    image: livekit/livekit-server:latest
+    image: livekit/livekit-server:v1.8.4
     container_name: opentalk-livekit
     profiles: ["core", "media"]
     command: --config /livekit.yaml
@@ -108,7 +108,7 @@ services:
 
   # RabbitMQ - Message Queue (optional, for Recorder and Mailer)
   rabbitmq:
-    image: rabbitmq:3-management
+    image: rabbitmq:3.13-management-alpine
     container_name: opentalk-rabbitmq
     ports:
       - "${RABBITMQ_PORT:-5672}:5672"
@@ -127,7 +127,7 @@ services:
 
   # OpenTalk Controller - Main Component
   controller:
-    image: ${CONTROLLER_IMAGE:-registry.opencode.de/opentalk/controller:latest}
+    image: ${CONTROLLER_IMAGE:-registry.opencode.de/opentalk/controller:v0.29.4}
     container_name: opentalk-controller
     ports:
       - "${CONTROLLER_PORT:-11311}:11311"
@@ -186,7 +186,7 @@ services:
 
   # OpenTalk Web Frontend
   frontend:
-    image: ${FRONTEND_IMAGE:-registry.opencode.de/opentalk/web-frontend:latest}
+    image: ${FRONTEND_IMAGE:-registry.opencode.de/opentalk/web-frontend:v2.4.3}
     container_name: opentalk-frontend
     ports:
       - "${HTTP_PORT:-80}:80"
@@ -201,7 +201,7 @@ services:
 
   # Optional: SMTP Mailer
   smtp-mailer:
-    image: ${MAILER_IMAGE:-registry.opencode.de/opentalk/smtp-mailer:latest}
+    image: ${MAILER_IMAGE:-registry.opencode.de/opentalk/smtp-mailer:v0.13.1}
     container_name: opentalk-smtp-mailer
     profiles: ["mailer"]
     environment:
@@ -218,7 +218,7 @@ services:
 
   # Optional: Recorder
   recorder:
-    image: ${RECORDER_IMAGE:-registry.opencode.de/opentalk/recorder:latest}
+    image: ${RECORDER_IMAGE:-registry.opencode.de/opentalk/recorder:v0.14.1}
     container_name: opentalk-recorder
     profiles: ["recorder"]
     environment:
@@ -237,7 +237,7 @@ services:
 
   # Optional: Obelisk (SIP gateway)
   obelisk:
-    image: ${OBELISK_IMAGE:-registry.opencode.de/opentalk/obelisk:latest}
+    image: ${OBELISK_IMAGE:-registry.opencode.de/opentalk/obelisk:v0.19.3}
     container_name: opentalk-obelisk
     profiles: ["sip"]
     environment:
@@ -257,7 +257,7 @@ services:
 
   # Optional: OpenTalk Etherpad
   etherpad:
-    image: ${ETHERPAD_IMAGE:-registry.opencode.de/opentalk/ot-etherpad:latest}
+    image: ${ETHERPAD_IMAGE:-registry.opencode.de/opentalk/ot-etherpad:v2.0.0}
     container_name: opentalk-etherpad
     profiles: ["etherpad"]
     environment:
@@ -274,7 +274,7 @@ services:
 
   # Optional: OpenTalk Spacedeck
   spacedeck:
-    image: ${SPACEDECK_IMAGE:-registry.opencode.de/opentalk/ot-spacedeck:latest}
+    image: ${SPACEDECK_IMAGE:-registry.opencode.de/opentalk/ot-spacedeck:v2.0.1}
     container_name: opentalk-spacedeck
     profiles: ["spacedeck"]
     environment:

@@ -39,6 +39,7 @@ Comprehensive documentation is available in the [docs](./docs) directory:
 - [Components](./docs/components/README.md)
 - [Configuration](./docs/configuration/README.md)
   - [Official Docker Images](./docs/configuration/official-images.md)
+  - [Component Versions](./VERSIONS.md)
 
 ### Official Documentation Reference
 
