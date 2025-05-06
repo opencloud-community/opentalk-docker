@@ -21,6 +21,8 @@ Optional components:
 - OpenTalk Obelisk (Telephone dial-in)
 - OpenTalk Recorder (Recording)
 - OpenTalk SMTP Mailer (Email notifications)
+- OpenTalk Etherpad (Collaborative document editing)
+- OpenTalk Spacedeck (Whiteboard functionality)
 
 ## Documentation
 
@@ -34,6 +36,7 @@ Comprehensive documentation is available in the [docs](./docs) directory:
   - [Traefik Setup](./docs/getting-started/traefik-setup.md)
 - [Components](./docs/components/README.md)
 - [Configuration](./docs/configuration/README.md)
+  - [Official Docker Images](./docs/configuration/official-images.md)
 
 ## Quick Start
 
@@ -51,19 +54,38 @@ cp .env.example .env
 # Edit .env with your configuration
 ```
 
-3. Start OpenTalk:
+3. Generate secure passwords:
 
 ```bash
-# For development/testing
+# Generate random secure passwords
+./scripts/generate-secrets.sh > my-secrets.env
+# Review and add these to your .env file
+```
+
+4. Start OpenTalk:
+
+```bash
+# For development/testing (all services)
 docker-compose up -d
 
 # For production with Traefik and HTTPS
 docker-compose -f docker-compose.yml -f docker-compose.traefik.yml up -d
+
+# Using profiles to start only specific components
+docker-compose --profile core up -d        # Start only core components
+docker-compose --profile mailer up -d      # Start core + mail components
+docker-compose --profile recorder up -d    # Start core + recording components
 ```
 
-4. Access the setup page at:
+5. Access the setup page at:
    - Development: http://localhost
    - Production: https://yourdomain.com
+
+6. Complete the post-installation steps:
+   - Set up Keycloak users and roles
+   - Test the installation
+   
+   See [Post-Installation Setup](./docs/getting-started/post-installation.md) for detailed instructions.
 
 ## Configuration
 

@@ -1,91 +1,73 @@
 # OpenTalk Controller
 
-The OpenTalk Controller is the core component of the OpenTalk platform. It provides the API and signaling functionality for video conferences.
-
-> **Note**: For the official Controller documentation, please visit [docs.opentalk.eu/admin/controller](https://docs.opentalk.eu/admin/controller/).
+The OpenTalk Controller is the central component of the OpenTalk platform. It provides the API for all client applications and coordinates the communication between clients and external services.
 
 ## Features
 
-- REST API for managing meetings, users, and resources
-- WebSocket-based signaling for real-time communication
-- Integration with Keycloak for authentication
-- Integration with LiveKit for WebRTC media handling
-- Database schema and migrations
-- Authorization and permission management
+- RESTful API for room management, user authentication, and meeting configuration
+- Real-time signaling for WebRTC media connections
+- Integration with Keycloak for authentication and user management
+- Integration with LiveKit for WebRTC media services
+- Integration with MinIO for file storage
+- Integration with various optional components (Etherpad, Spacedeck, etc.)
 
-## Docker Configuration
+## Configuration
 
-### Docker Image
-
-The OpenTalk Controller is available as a Docker image. In the Docker Compose setup, it's configured as follows:
-
-```yaml
-controller:
-  image: opentalk-controller:latest
-  container_name: opentalk-controller
-  ports:
-    - "11311:11311"
-  environment:
-    # Environment variables detailed below
-  volumes:
-    - ./config/controller.toml:/app/config.toml
-  depends_on:
-    - postgres
-    - keycloak
-    - livekit
-    - minio
-    # Other dependencies as needed
-```
+The Controller is configured using a combination of the `config/controller.toml` file and environment variables.
 
 ### Environment Variables
 
-The Controller can be configured using environment variables with the following pattern:
+Key environment variables include:
+
+- `OPENTALK_CTRL_DATABASE__URL`: PostgreSQL connection string
+- `OPENTALK_CTRL_HTTP__PORT`: HTTP port to listen on
+- `OPENTALK_CTRL_OIDC__AUTHORITY`: OIDC issuer URL
+- `OPENTALK_CTRL_OIDC__FRONTEND__CLIENT_ID`: OIDC client ID for the frontend
+- `OPENTALK_CTRL_OIDC__CONTROLLER__CLIENT_ID`: OIDC client ID for the controller
+- `OPENTALK_CTRL_OIDC__CONTROLLER__CLIENT_SECRET`: OIDC client secret for the controller
+- `OPENTALK_CTRL_LIVEKIT__PUBLIC_URL`: Public URL for LiveKit
+- `OPENTALK_CTRL_LIVEKIT__SERVICE_URL`: Service URL for LiveKit
+- `OPENTALK_CTRL_LIVEKIT__API_KEY`: LiveKit API key
+- `OPENTALK_CTRL_LIVEKIT__API_SECRET`: LiveKit API secret
+- `OPENTALK_CTRL_MINIO__URI`: MinIO URI
+- `OPENTALK_CTRL_MINIO__BUCKET`: MinIO bucket name
+- `OPENTALK_CTRL_MINIO__ACCESS_KEY`: MinIO access key
+- `OPENTALK_CTRL_MINIO__SECRET_KEY`: MinIO secret key
+
+### Config File
+
+The `controller.toml` file allows for more detailed configuration. An example can be found in the official OpenTalk documentation or in the `ot-setup` repository.
+
+## Docker Image
+
+The official Docker image for the Controller is:
 
 ```
-OPENTALK_CTRL_<section>__<field>
+registry.opencode.de/opentalk/controller:latest
 ```
 
-Common environment variables:
+For production use, it's recommended to pin a specific version:
 
-| Variable | Description | Example |
-|----------|-------------|---------|
-| `OPENTALK_CTRL_DATABASE__URL` | PostgreSQL connection URL | `postgres://user:password@postgres:5432/opentalk` |
-| `OPENTALK_CTRL_OIDC__AUTHORITY` | OIDC authority URL | `http://keycloak:8080/realms/opentalk` |
-| `OPENTALK_CTRL_OIDC__FRONTEND__CLIENT_ID` | Frontend client ID | `OtFrontend` |
-| `OPENTALK_CTRL_OIDC__CONTROLLER__CLIENT_ID` | Controller client ID | `OtBackend` |
-| `OPENTALK_CTRL_OIDC__CONTROLLER__CLIENT_SECRET` | Controller client secret | `secret` |
-| `OPENTALK_CTRL_LIVEKIT__PUBLIC_URL` | Public LiveKit URL | `wss://livekit.example.com` |
-| `OPENTALK_CTRL_LIVEKIT__SERVICE_URL` | Internal LiveKit URL | `http://livekit:7880` |
-| `OPENTALK_CTRL_MINIO__URI` | MinIO URL | `http://minio:9000` |
+```
+registry.opencode.de/opentalk/controller:v0.29.4
+```
 
-See the [Environment Variables](../configuration/environment-variables.md) documentation for a complete list.
+## Scaling
 
-## Configuration File
-
-The Controller can also be configured using a TOML configuration file. See [Controller Configuration](../configuration/controller-config.md) for details.
+For high-availability and scaling, the Controller can be deployed with multiple instances behind a load balancer. In this scenario, Redis is required for shared state storage.
 
 ## Health Checks
 
-The Controller provides a health check endpoint at `/health` that can be used to monitor its status.
-
-## Container Resources
-
-Recommended resource limits for the Controller container:
-
-- Small deployment (up to 50 concurrent users): 1 CPU, 1GB RAM
-- Medium deployment (up to 200 concurrent users): 2 CPU, 2GB RAM
-- Large deployment (200+ concurrent users): 4+ CPU, 4+ GB RAM
+The Controller provides a health check endpoint at `/health` that can be used by container orchestrators and load balancers.
 
 ## Logs
 
-The Controller logs to stdout/stderr, which can be accessed using Docker's logging mechanisms:
+Logs are output to stdout/stderr and can be viewed using:
 
 ```bash
 docker logs opentalk-controller
 ```
 
-## Related Documentation
+## API Documentation
 
-- [Controller Configuration](../configuration/controller-config.md)
-- [Environment Variables](../configuration/environment-variables.md)
-- [Production Setup](../getting-started/production-setup.md)
+API documentation is available at `/swagger-ui/` when the Controller is running with development settings.
