@@ -1,0 +1,239 @@
+version: '3'
+
+services:
+  # PostgreSQL Database
+  postgres:
+    image: postgres:14
+    container_name: opentalk-postgres
+    environment:
+      POSTGRES_USER: ${DB_USER:-opentalk}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-opentalk-password}
+      POSTGRES_DB: ${DB_NAME:-opentalk}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "${DB_PORT:-5432}:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-opentalk}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+
+  # Redis - For multi-node setups
+  redis:
+    image: redis:alpine
+    container_name: opentalk-redis
+    ports:
+      - "${REDIS_PORT:-6379}:6379"
+    volumes:
+      - redis_data:/data
+    restart: unless-stopped
+
+  # MinIO - Object Storage
+  minio:
+    image: minio/minio:latest
+    container_name: opentalk-minio
+    command: server /data --console-address ":9001"
+    ports:
+      - "${MINIO_PORT:-9000}:9000"
+      - "${MINIO_CONSOLE_PORT:-9001}:9001"
+    environment:
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER:-minioadmin}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD:-minioadmin}
+    volumes:
+      - minio_data:/data
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
+      interval: 30s
+      timeout: 20s
+      retries: 3
+    restart: unless-stopped
+
+  # Create MinIO bucket for OpenTalk
+  createbuckets:
+    image: minio/mc
+    container_name: opentalk-createbuckets
+    depends_on:
+      - minio
+    entrypoint: >
+      /bin/sh -c "
+      until (mc config host add myminio http://minio:9000 ${MINIO_ROOT_USER:-minioadmin} ${MINIO_ROOT_PASSWORD:-minioadmin}) do echo 'Waiting for MinIO...' && sleep 1; done;
+      mc mb myminio/${MINIO_BUCKET:-controller} || true;
+      exit 0;
+      "
+    restart: on-failure
+
+  # Keycloak - Authentication
+  keycloak:
+    image: quay.io/keycloak/keycloak:latest
+    container_name: opentalk-keycloak
+    command: start-dev
+    environment:
+      KEYCLOAK_ADMIN: ${KEYCLOAK_ADMIN:-admin}
+      KEYCLOAK_ADMIN_PASSWORD: ${KEYCLOAK_ADMIN_PASSWORD:-admin}
+      KC_DB: postgres
+      KC_DB_URL: jdbc:postgresql://postgres:5432/${KEYCLOAK_DB_NAME:-keycloak}
+      KC_DB_USERNAME: ${DB_USER:-opentalk}
+      KC_DB_PASSWORD: ${DB_PASSWORD:-opentalk-password}
+    ports:
+      - "${KEYCLOAK_PORT:-8080}:8080"
+    depends_on:
+      - postgres
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/health/ready"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    restart: unless-stopped
+
+  # LiveKit - WebRTC SFU
+  livekit:
+    image: livekit/livekit-server:latest
+    container_name: opentalk-livekit
+    command: --config /livekit.yaml
+    volumes:
+      - ./config/livekit.yaml:/livekit.yaml
+    ports:
+      - "${LIVEKIT_PORT:-7880}:7880"
+      - "${LIVEKIT_PORT_WS:-7881}:7881"
+      - "${LIVEKIT_PORT_UDP:-7882}:7882/udp"
+    restart: unless-stopped
+
+  # RabbitMQ - Message Queue (optional, for Recorder and Mailer)
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: opentalk-rabbitmq
+    ports:
+      - "${RABBITMQ_PORT:-5672}:5672"
+      - "${RABBITMQ_MGMT_PORT:-15672}:15672"
+    environment:
+      RABBITMQ_DEFAULT_USER: ${RABBITMQ_USER:-opentalk}
+      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_PASSWORD:-opentalk-password}
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+    healthcheck:
+      test: ["CMD", "rabbitmqctl", "status"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+    restart: unless-stopped
+
+  # OpenTalk Controller - Main Component
+  controller:
+    image: ${CONTROLLER_IMAGE:-opentalk-controller:latest}
+    container_name: opentalk-controller
+    ports:
+      - "${CONTROLLER_PORT:-11311}:11311"
+    environment:
+      # Database configuration
+      OPENTALK_CTRL_DATABASE__URL: "postgres://${DB_USER:-opentalk}:${DB_PASSWORD:-opentalk-password}@postgres:5432/${DB_NAME:-opentalk}"
+      OPENTALK_CTRL_DATABASE__MAX_CONNECTIONS: "${DB_MAX_CONNECTIONS:-20}"
+      
+      # HTTP server configuration
+      OPENTALK_CTRL_HTTP__ADDR: "0.0.0.0"
+      OPENTALK_CTRL_HTTP__PORT: "11311"
+      
+      # OIDC configuration
+      OPENTALK_CTRL_OIDC__AUTHORITY: "http://keycloak:8080/realms/${KEYCLOAK_REALM:-opentalk}"
+      OPENTALK_CTRL_OIDC__FRONTEND__CLIENT_ID: "${FRONTEND_CLIENT_ID:-OtFrontend}"
+      OPENTALK_CTRL_OIDC__CONTROLLER__CLIENT_ID: "${BACKEND_CLIENT_ID:-OtBackend}"
+      OPENTALK_CTRL_OIDC__CONTROLLER__CLIENT_SECRET: "${BACKEND_CLIENT_SECRET:-change-me-in-production}"
+      
+      # User search configuration
+      OPENTALK_CTRL_USER_SEARCH__BACKEND: "keycloak_webapi"
+      OPENTALK_CTRL_USER_SEARCH__API_BASE_URL: "http://keycloak:8080/admin/realms/${KEYCLOAK_REALM:-opentalk}"
+      OPENTALK_CTRL_USER_SEARCH__USERS_FIND_BEHAVIOR: "from_user_search_backend"
+      
+      # LiveKit configuration
+      OPENTALK_CTRL_LIVEKIT__PUBLIC_URL: "${LIVEKIT_PUBLIC_URL:-wss://localhost:7880}"
+      OPENTALK_CTRL_LIVEKIT__SERVICE_URL: "http://livekit:7880"
+      OPENTALK_CTRL_LIVEKIT__API_KEY: "${LIVEKIT_API_KEY:-devkey}"
+      OPENTALK_CTRL_LIVEKIT__API_SECRET: "${LIVEKIT_API_SECRET:-devsecret}"
+      
+      # MinIO configuration
+      OPENTALK_CTRL_MINIO__URI: "http://minio:9000"
+      OPENTALK_CTRL_MINIO__BUCKET: "${MINIO_BUCKET:-controller}"
+      OPENTALK_CTRL_MINIO__ACCESS_KEY: "${MINIO_ROOT_USER:-minioadmin}"
+      OPENTALK_CTRL_MINIO__SECRET_KEY: "${MINIO_ROOT_PASSWORD:-minioadmin}"
+      
+      # Redis configuration (for multi-node setup)
+      OPENTALK_CTRL_REDIS__URL: "redis://redis:6379/"
+      
+      # RabbitMQ configuration
+      OPENTALK_CTRL_RABBIT_MQ__URL: "amqp://${RABBITMQ_USER:-opentalk}:${RABBITMQ_PASSWORD:-opentalk-password}@rabbitmq:5672/%2F"
+      # Uncomment to enable mail worker
+      ${ENABLE_MAILER:+OPENTALK_CTRL_RABBIT_MQ__MAIL_TASK_QUEUE: "opentalk_mailer"}
+      # Uncomment to enable recording
+      ${ENABLE_RECORDER:+OPENTALK_CTRL_RABBIT_MQ__RECORDING_TASK_QUEUE: "opentalk_recorder"}
+    volumes:
+      - ${CONTROLLER_CONFIG_PATH:-./config/controller.toml}:/app/config.toml:ro
+    depends_on:
+      - postgres
+      - keycloak
+      - minio
+      - createbuckets
+      - livekit
+      - redis
+      - rabbitmq
+    restart: unless-stopped
+
+  # OpenTalk Web Frontend
+  frontend:
+    image: ${FRONTEND_IMAGE:-opentalk-frontend:latest}
+    container_name: opentalk-frontend
+    ports:
+      - "${HTTP_PORT:-80}:80"
+      - "${HTTPS_PORT:-443}:443"
+    environment:
+      API_URL: "${CONTROLLER_PUBLIC_URL:-http://localhost:11311}"
+      OIDC_AUTHORITY: "${KEYCLOAK_PUBLIC_URL:-http://localhost:8080}/realms/${KEYCLOAK_REALM:-opentalk}"
+      OIDC_CLIENT_ID: "${FRONTEND_CLIENT_ID:-OtFrontend}"
+    depends_on:
+      - controller
+    restart: unless-stopped
+
+  # Optional: SMTP Mailer
+  smtp-mailer:
+    image: ${MAILER_IMAGE:-opentalk-smtp-mailer:latest}
+    container_name: opentalk-smtp-mailer
+    environment:
+      SMTP_HOST: "${SMTP_HOST}"
+      SMTP_PORT: "${SMTP_PORT:-587}"
+      SMTP_USERNAME: "${SMTP_USERNAME}"
+      SMTP_PASSWORD: "${SMTP_PASSWORD}"
+      SMTP_FROM: "${SMTP_FROM:-opentalk@example.com}"
+      RABBITMQ_URL: "amqp://${RABBITMQ_USER:-opentalk}:${RABBITMQ_PASSWORD:-opentalk-password}@rabbitmq:5672/%2F"
+      RABBITMQ_QUEUE: "opentalk_mailer"
+    depends_on:
+      - rabbitmq
+    profiles:
+      - mailer
+    restart: unless-stopped
+
+  # Optional: Recorder
+  recorder:
+    image: ${RECORDER_IMAGE:-opentalk-recorder:latest}
+    container_name: opentalk-recorder
+    environment:
+      RABBITMQ_URL: "amqp://${RABBITMQ_USER:-opentalk}:${RABBITMQ_PASSWORD:-opentalk-password}@rabbitmq:5672/%2F"
+      RABBITMQ_QUEUE: "opentalk_recorder"
+      CONTROLLER_URL: "http://controller:11311"
+      LIVEKIT_URL: "http://livekit:7880"
+      RECORDER_OUTPUT_DIR: "/recordings"
+    volumes:
+      - recorder_data:/recordings
+    depends_on:
+      - rabbitmq
+      - controller
+      - livekit
+    profiles:
+      - recorder
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
+  redis_data:
+  minio_data:
+  rabbitmq_data:
+  recorder_data:

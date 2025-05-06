@@ -1,0 +1,101 @@
+# OpenTalk Controller Configuration
+# This is a basic configuration file that can be used alongside with environment variables
+
+[logging]
+# Default tracing directives
+default_directives = [
+   "ERROR",
+   "opentalk=INFO",
+   "pinky_swear=OFF",
+   "rustls=WARN",
+   "mio=ERROR",
+   "lapin=WARN"
+]
+
+# Service name when using opentelemetry
+service_name = "controller"
+# Service namespace when using opentelemetry
+service_namespace = "opentalk"
+
+[database]
+# URL used to connect to postgres.
+# This is typically overridden with the OPENTALK_CTRL_DATABASE__URL environment variable
+url = "postgres://opentalk:opentalk-password@localhost:5432/opentalk"
+
+# Maximum number of connections allowed to the server.
+max_connections = 20
+
+[http]
+# Address to bind to
+addr = "0.0.0.0"
+
+# Port to listen on
+port = 11311
+
+# OIDC configuration.
+[oidc]
+# Base url for the OIDC authority
+authority = "http://keycloak:8080/realms/opentalk"
+
+[oidc.frontend]
+# Client id for the frontend
+client_id = "OtFrontend"
+
+[oidc.controller]
+# Client id for the controller
+client_id = "OtBackend"
+
+# Client secret for the controller
+client_secret = "change-me-in-production"
+
+[user_search]
+# Backend to use for user search
+backend = "keycloak_webapi"
+
+# Base URL of the Keycloak web api
+api_base_url = "http://keycloak:8080/admin/realms/opentalk"
+
+# Set the behavior of the `/users/find` endpoint
+users_find_behavior = "from_user_search_backend"
+
+# LiveKit WebRTC SFU configuration
+[livekit]
+public_url = "wss://localhost:7880"
+service_url = "http://livekit:7880"
+
+api_key = "devkey"
+api_secret = "devsecret"
+
+# RabbitMQ configuration
+[rabbit_mq]
+# The URL to connect to RabbitMQ
+url = "amqp://opentalk:opentalk-password@rabbitmq:5672/%2F"
+
+# The rabbitmq queue name for the mail worker (uncomment to enable)
+#mail_task_queue = "opentalk_mailer"
+
+# The rabbitmq queue name for the recorder (uncomment to enable)
+#recording_task_queue = "opentalk_recorder"
+
+# Redis configuration (for multi-node setups)
+[redis]
+# Redis URL 
+url = "redis://redis:6379/"
+
+# MinIO configuration
+[minio]
+# The URI to the MinIO instance
+uri = "http://minio:9000"
+# Name of the bucket
+bucket = "controller"
+# Access key for the MinIO bucket
+access_key = "minioadmin"
+# Secret key for the MinIO bucket
+secret_key = "minioadmin"
+
+# Default/fallback values
+[defaults]
+# Default language of a new user
+user_language = "en-US"
+# Default presenter role for all users
+screen_share_requires_permission = true
