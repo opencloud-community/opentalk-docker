@@ -2,7 +2,7 @@
 
 [![License](https://img.shields.io/badge/License-EUPL%201.2-blue.svg)](https://joinup.ec.europa.eu/collection/eupl/eupl-text-eupl-12)
 
-Docker and Docker Compose setup for [OpenTalk](https://opentalk.eu/), an open-source video conferencing solution designed with productivity, digital sovereignty and privacy in mind.
+Docker and Docker Compose setup for [OpenTalk](https://opentalk.eu/), an open-source video conferencing solution designed with productivity, digital sovereignty and privacy in mind. This is a community-maintained project that complements the [official OpenTalk documentation](https://docs.opentalk.eu/).
 
 ## Overview
 
@@ -30,6 +30,8 @@ Comprehensive documentation is available in the [docs](./docs) directory:
   - [Prerequisites](./docs/getting-started/prerequisites.md)
   - [Quick Start](./docs/getting-started/quick-start.md)
   - [Production Setup](./docs/getting-started/production-setup.md)
+  - [DNS Configuration](./docs/getting-started/dns-configuration.md)
+  - [Traefik Setup](./docs/getting-started/traefik-setup.md)
 - [Components](./docs/components/README.md)
 - [Configuration](./docs/configuration/README.md)
 
@@ -52,10 +54,16 @@ cp .env.example .env
 3. Start OpenTalk:
 
 ```bash
+# For development/testing
 docker-compose up -d
+
+# For production with Traefik and HTTPS
+docker-compose -f docker-compose.yml -f docker-compose.traefik.yml up -d
 ```
 
-4. Access the setup page at http://localhost
+4. Access the setup page at:
+   - Development: http://localhost
+   - Production: https://yourdomain.com
 
 ## Configuration
 

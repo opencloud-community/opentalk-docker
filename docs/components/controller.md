@@ -2,6 +2,8 @@
 
 The OpenTalk Controller is the core component of the OpenTalk platform. It provides the API and signaling functionality for video conferences.
 
+> **Note**: For the official Controller documentation, please visit [docs.opentalk.eu/admin/controller](https://docs.opentalk.eu/admin/controller/).
+
 ## Features
 
 - REST API for managing meetings, users, and resources

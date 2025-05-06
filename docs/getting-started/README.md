@@ -2,6 +2,8 @@
 
 This section covers how to get started with OpenTalk using Docker and Docker Compose.
 
+> **Note**: For official OpenTalk installation guides, please refer to the [official OpenTalk documentation](https://docs.opentalk.eu/admin/).
+
 ## Overview
 
 OpenTalk is a comprehensive video conferencing solution that consists of several components:

@@ -2,6 +2,8 @@
 
 This directory contains documentation for deploying and configuring OpenTalk using Docker and Docker Compose.
 
+> **Note**: This is a community-maintained project. For official documentation, please visit [docs.opentalk.eu](https://docs.opentalk.eu/).
+
 ## Table of Contents
 
 - [Getting Started](getting-started/README.md)

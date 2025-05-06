@@ -2,6 +2,8 @@
 
 Before you begin deploying OpenTalk using Docker, ensure your system meets the following requirements:
 
+> **Note**: These requirements are specific to this Docker setup. For official system requirements, please refer to the [official OpenTalk documentation](https://docs.opentalk.eu/admin/).
+
 ## Hardware Requirements
 
 Recommended minimum specifications for a basic setup:

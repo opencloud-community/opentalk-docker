@@ -2,6 +2,8 @@
 
 This document lists the environment variables that can be used to configure the various components of OpenTalk in a Docker environment.
 
+> **Note**: For official configuration references, please visit [docs.opentalk.eu/admin/controller/core/configuration](https://docs.opentalk.eu/admin/controller/core/configuration/).
+
 ## OpenTalk Controller
 
 The Controller can be configured using environment variables with the following pattern:
