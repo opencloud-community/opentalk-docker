@@ -11,6 +11,15 @@ The official images are located at:
 registry.opencode.de/opentalk
 ```
 
+## Official OpenTalk Setup Repository
+
+This repository is based on and compatible with the official OpenTalk Setup repository:
+
+- Official Repository: [gitlab.opencode.de/opentalk/ot-setup](https://gitlab.opencode.de/opentalk/ot-setup)
+- Official docker-compose.yaml: [View on GitLab](https://gitlab.opencode.de/opentalk/ot-setup/-/blob/main/docker-compose.yaml?ref_type=heads)
+
+While this community repository provides additional documentation and deployment options, we strive to maintain compatibility with the official setup.
+
 ## Available Components
 
 The following components are officially provided by OpenTalk and are configured in our `docker-compose.yml`:

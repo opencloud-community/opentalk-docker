@@ -2,7 +2,9 @@
 
 [![License](https://img.shields.io/badge/License-EUPL%201.2-blue.svg)](https://joinup.ec.europa.eu/collection/eupl/eupl-text-eupl-12)
 
-Docker and Docker Compose setup for [OpenTalk](https://opentalk.eu/), an open-source video conferencing solution designed with productivity, digital sovereignty and privacy in mind. This is a community-maintained project that complements the [official OpenTalk documentation](https://docs.opentalk.eu/).
+Docker and Docker Compose setup for [OpenTalk](https://opentalk.eu/), an open-source video conferencing solution designed with productivity, digital sovereignty and privacy in mind. 
+
+This is a community-maintained project that complements the [official OpenTalk documentation](https://docs.opentalk.eu/) and is based on the [official OpenTalk Setup repository](https://gitlab.opencode.de/opentalk/ot-setup).
 
 ## Overview
 
@@ -110,3 +112,17 @@ This project is licensed under the European Union Public License 1.2 (EUPL 1.2).
 ## Disclaimer
 
 This is a community-maintained project and is not officially supported by the OpenTalk GmbH. For official documentation, please visit [docs.opentalk.eu](https://docs.opentalk.eu/).
+
+### When to use this repository vs. the official one
+
+- **Use this repository if:**
+  - You want additional deployment options and documentation
+  - You're looking for a more modular Docker Compose setup with profiles
+  - You prefer a GitHub-based workflow with community contributions
+
+- **Use the official repository if:**
+  - You want the most up-to-date official release
+  - You need official support
+  - You prefer a more streamlined deployment approach
+
+The official OpenTalk Setup repository can be found at [gitlab.opencode.de/opentalk/ot-setup](https://gitlab.opencode.de/opentalk/ot-setup).

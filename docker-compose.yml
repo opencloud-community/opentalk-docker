@@ -5,6 +5,7 @@ services:
   postgres:
     image: postgres:14
     container_name: opentalk-postgres
+    profiles: ["core", "database"]
     environment:
       POSTGRES_USER: ${DB_USER:-opentalk}
       POSTGRES_PASSWORD: ${DB_PASSWORD:-opentalk-password}
@@ -24,6 +25,7 @@ services:
   redis:
     image: redis:alpine
     container_name: opentalk-redis
+    profiles: ["core", "redis"]
     ports:
       - "${REDIS_PORT:-6379}:6379"
     volumes:
@@ -34,6 +36,7 @@ services:
   minio:
     image: minio/minio:latest
     container_name: opentalk-minio
+    profiles: ["core", "storage"]
     command: server /data --console-address ":9001"
     ports:
       - "${MINIO_PORT:-9000}:9000"
@@ -54,6 +57,7 @@ services:
   createbuckets:
     image: minio/mc
     container_name: opentalk-createbuckets
+    profiles: ["core", "storage"]
     depends_on:
       - minio
     entrypoint: >
@@ -68,6 +72,7 @@ services:
   keycloak:
     image: quay.io/keycloak/keycloak:latest
     container_name: opentalk-keycloak
+    profiles: ["core", "auth"]
     command: start-dev
     environment:
       KEYCLOAK_ADMIN: ${KEYCLOAK_ADMIN:-admin}
@@ -91,6 +96,7 @@ services:
   livekit:
     image: livekit/livekit-server:latest
     container_name: opentalk-livekit
+    profiles: ["core", "media"]
     command: --config /livekit.yaml
     volumes:
       - ./config/livekit.yaml:/livekit.yaml
@@ -121,7 +127,7 @@ services:
 
   # OpenTalk Controller - Main Component
   controller:
-    image: ${CONTROLLER_IMAGE:-opentalk-controller:latest}
+    image: ${CONTROLLER_IMAGE:-registry.opencode.de/opentalk/controller:latest}
     container_name: opentalk-controller
     ports:
       - "${CONTROLLER_PORT:-11311}:11311"
@@ -180,7 +186,7 @@ services:
 
   # OpenTalk Web Frontend
   frontend:
-    image: ${FRONTEND_IMAGE:-opentalk-frontend:latest}
+    image: ${FRONTEND_IMAGE:-registry.opencode.de/opentalk/web-frontend:latest}
     container_name: opentalk-frontend
     ports:
       - "${HTTP_PORT:-80}:80"
@@ -195,8 +201,9 @@ services:
 
   # Optional: SMTP Mailer
   smtp-mailer:
-    image: ${MAILER_IMAGE:-opentalk-smtp-mailer:latest}
+    image: ${MAILER_IMAGE:-registry.opencode.de/opentalk/smtp-mailer:latest}
     container_name: opentalk-smtp-mailer
+    profiles: ["mailer"]
     environment:
       SMTP_HOST: "${SMTP_HOST}"
       SMTP_PORT: "${SMTP_PORT:-587}"
@@ -207,14 +214,13 @@ services:
       RABBITMQ_QUEUE: "opentalk_mailer"
     depends_on:
       - rabbitmq
-    profiles:
-      - mailer
     restart: unless-stopped
 
   # Optional: Recorder
   recorder:
-    image: ${RECORDER_IMAGE:-opentalk-recorder:latest}
+    image: ${RECORDER_IMAGE:-registry.opencode.de/opentalk/recorder:latest}
     container_name: opentalk-recorder
+    profiles: ["recorder"]
     environment:
       RABBITMQ_URL: "amqp://${RABBITMQ_USER:-opentalk}:${RABBITMQ_PASSWORD:-opentalk-password}@rabbitmq:5672/%2F"
       RABBITMQ_QUEUE: "opentalk_recorder"
@@ -227,8 +233,59 @@ services:
       - rabbitmq
       - controller
       - livekit
-    profiles:
-      - recorder
+    restart: unless-stopped
+
+  # Optional: Obelisk (SIP gateway)
+  obelisk:
+    image: ${OBELISK_IMAGE:-registry.opencode.de/opentalk/obelisk:latest}
+    container_name: opentalk-obelisk
+    profiles: ["sip"]
+    environment:
+      OBELISK_SIP_EXTERNAL_IP: "${SIP_EXTERNAL_IP}"
+      OBELISK_SIP_PORT: "${SIP_PORT:-5060}"
+      OBELISK_CONTROLLER_API_URL: "http://controller:11311"
+      OBELISK_CONTROLLER_API_KEY: "${OBELISK_CLIENT_SECRET:-change-me-in-production}"
+      OBELISK_LIVEKIT_HOST: "livekit:7880"
+      OBELISK_LIVEKIT_API_KEY: "${LIVEKIT_API_KEY:-devkey}"
+      OBELISK_LIVEKIT_API_SECRET: "${LIVEKIT_API_SECRET:-devsecret}"
+    ports:
+      - "${SIP_PORT:-5060}:5060/udp"
+    depends_on:
+      - controller
+      - livekit
+    restart: unless-stopped
+
+  # Optional: OpenTalk Etherpad
+  etherpad:
+    image: ${ETHERPAD_IMAGE:-registry.opencode.de/opentalk/ot-etherpad:latest}
+    container_name: opentalk-etherpad
+    profiles: ["etherpad"]
+    environment:
+      ETHERPAD_DB_TYPE: postgres
+      ETHERPAD_DB_HOST: postgres
+      ETHERPAD_DB_PORT: 5432
+      ETHERPAD_DB_USER: ${DB_USER:-opentalk}
+      ETHERPAD_DB_PASSWORD: ${DB_PASSWORD:-opentalk-password}
+      ETHERPAD_DB_NAME: ${ETHERPAD_DB_NAME:-etherpad}
+      ETHERPAD_API_KEY: ${ETHERPAD_API_KEY:-example-api-key-change-me}
+    depends_on:
+      - postgres
+    restart: unless-stopped
+
+  # Optional: OpenTalk Spacedeck
+  spacedeck:
+    image: ${SPACEDECK_IMAGE:-registry.opencode.de/opentalk/ot-spacedeck:latest}
+    container_name: opentalk-spacedeck
+    profiles: ["spacedeck"]
+    environment:
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_USER: ${DB_USER:-opentalk}
+      DB_PASS: ${DB_PASSWORD:-opentalk-password}
+      DB_NAME: ${SPACEDECK_DB_NAME:-spacedeck}
+      SPACEDECK_API_TOKEN: ${SPACEDECK_API_TOKEN:-example-api-key-change-me}
+    depends_on:
+      - postgres
     restart: unless-stopped
 
 volumes:
