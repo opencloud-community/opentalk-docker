@@ -64,7 +64,9 @@ docker-compose --profile mailer --profile recorder --profile sip --profile ether
 
 ## Versions
 
-The images in this project are used with the `latest` tag, which means the latest version from the Git repository. For production environments, we recommend defining specific versions in your `.env` file:
+All component images in this project now use pinned version tags for stability. We maintain a dedicated [VERSIONS.md](/VERSIONS.md) file that tracks the current versions of all components.
+
+For specific deployments, you can override the default versions in your `.env` file:
 
 ```
 CONTROLLER_IMAGE=registry.opencode.de/opentalk/controller:v0.29.4
@@ -72,7 +74,7 @@ FRONTEND_IMAGE=registry.opencode.de/opentalk/web-frontend:v2.4.3
 OBELISK_IMAGE=registry.opencode.de/opentalk/obelisk:v0.19.3
 ```
 
-Current versions can be found in the [official OpenTalk Setup Repository](https://gitlab.opencode.de/opentalk/ot-setup) or in the [documentation](https://docs.opentalk.eu/releases/).
+We regularly sync our versions with those from the [official OpenTalk Setup Repository](https://gitlab.opencode.de/opentalk/ot-setup) and the [official release documentation](https://docs.opentalk.eu/releases/).
 
 ## Configuration
 

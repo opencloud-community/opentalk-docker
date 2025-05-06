@@ -40,16 +40,18 @@ The `controller.toml` file allows for more detailed configuration. An example ca
 
 ## Docker Image
 
-The official Docker image for the Controller is:
-
-```
-registry.opencode.de/opentalk/controller:latest
-```
-
-For production use, it's recommended to pin a specific version:
+The official Docker image for the Controller is used with a specific version tag:
 
 ```
 registry.opencode.de/opentalk/controller:v0.29.4
+```
+
+The current version can be found in our [VERSIONS.md](/VERSIONS.md) file. 
+
+You can override this version in your `.env` file:
+
+```
+CONTROLLER_IMAGE=registry.opencode.de/opentalk/controller:v0.29.5
 ```
 
 ## Scaling
