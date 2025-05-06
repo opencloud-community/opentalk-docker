@@ -36,7 +36,17 @@ Key environment variables include:
 
 ### Config File
 
-The `controller.toml` file allows for more detailed configuration. An example can be found in the official OpenTalk documentation or in the `ot-setup` repository.
+The `controller.toml` file allows for more detailed configuration. Examples and documentation can be found in:
+
+- [Configuration Overview](https://docs.opentalk.eu/admin/controller/core/configuration/)
+- [Database Configuration](https://docs.opentalk.eu/admin/controller/core/database/)
+- [HTTP Server Configuration](https://docs.opentalk.eu/admin/controller/core/http_server/)
+- [Identity Provider Configuration](https://docs.opentalk.eu/admin/controller/core/oidc/)
+- [LiveKit Configuration](https://docs.opentalk.eu/admin/controller/core/livekit/)
+- [File Storage (MinIO) Configuration](https://docs.opentalk.eu/admin/controller/core/minio/)
+- [Message Queue (RabbitMQ) Configuration](https://docs.opentalk.eu/admin/controller/core/rabbitmq/)
+
+You can also find example configuration files in the [official OpenTalk Setup repository](https://gitlab.opencode.de/opentalk/ot-setup/-/tree/main/extras/opentalk-samples).
 
 ## Docker Image
 

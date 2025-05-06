@@ -47,12 +47,12 @@ This repository complements the official OpenTalk documentation. For detailed co
 
 | Component     | Docker Setup (this repo)       | Official Documentation                      |
 |---------------|--------------------------------|---------------------------------------------|
-| Controller    | [Docker Setup](./docs/components/controller.md) | [Official Docs](https://docs.opentalk.eu/admin/controller/) |
-| Obelisk       | [Docker Setup](./docs/components/) | [Official Docs](https://docs.opentalk.eu/admin/obelisk/) |
-| Recorder      | [Docker Setup](./docs/components/) | [Official Docs](https://docs.opentalk.eu/admin/recorder/) |
-| SMTP Mailer   | [Docker Setup](./docs/components/) | [Official Docs](https://docs.opentalk.eu/admin/smtp-mailer/) |
-| Etherpad      | [Docker Setup](./docs/components/) | [Official Docs](https://docs.opentalk.eu/admin/controller/advanced/additional_services/etherpad/) |
-| Spacedeck     | [Docker Setup](./docs/components/) | [Official Docs](https://docs.opentalk.eu/admin/controller/advanced/additional_services/spacedeck/) |
+| Controller    | [Docker Setup](./docs/components/controller.md) | [Config](https://docs.opentalk.eu/admin/controller/core/configuration/) · [Database](https://docs.opentalk.eu/admin/controller/core/database/) · [OIDC](https://docs.opentalk.eu/admin/controller/core/oidc/) · [LiveKit](https://docs.opentalk.eu/admin/controller/core/livekit/) |
+| Obelisk       | [Docker Setup](./docs/components/) | [Config](https://docs.opentalk.eu/admin/obelisk/configuration/) · [SIP](https://docs.opentalk.eu/admin/obelisk/sip/) · [Overview](https://docs.opentalk.eu/admin/controller/advanced/additional_services/obelisk/) |
+| Recorder      | [Docker Setup](./docs/components/) | [Config](https://docs.opentalk.eu/admin/recorder/configuration/) · [Hardware Acceleration](https://docs.opentalk.eu/admin/recorder/hardware_acceleration/) · [Overview](https://docs.opentalk.eu/admin/controller/advanced/additional_services/recorder/) |
+| SMTP Mailer   | [Docker Setup](./docs/components/) | [Config](https://docs.opentalk.eu/admin/smtp-mailer/configuration/) · [Templates](https://docs.opentalk.eu/admin/smtp-mailer/templates/) · [Overview](https://docs.opentalk.eu/admin/controller/advanced/additional_services/smtp_mailer/) |
+| Etherpad      | [Docker Setup](./docs/components/) | [Setup Guide](https://docs.opentalk.eu/admin/controller/advanced/additional_services/etherpad/) |
+| Spacedeck     | [Docker Setup](./docs/components/) | [Setup Guide](https://docs.opentalk.eu/admin/controller/advanced/additional_services/spacedeck/) |
 
 For the official deployment repository, see: [gitlab.opencode.de/opentalk/ot-setup](https://gitlab.opencode.de/opentalk/ot-setup)
 

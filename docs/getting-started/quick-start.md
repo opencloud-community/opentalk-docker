@@ -114,4 +114,8 @@ If you encounter any issues:
 
 3. Verify your environment configuration in the `.env` file
 
-For more detailed troubleshooting, refer to the [official OpenTalk documentation](https://docs.opentalk.eu/admin/).
+For more detailed troubleshooting, refer to the specific component documentation:
+- [Controller Troubleshooting](https://docs.opentalk.eu/admin/controller/core/configuration/)
+- [Keycloak Integration](https://docs.opentalk.eu/admin/controller/core/keycloak/)
+- [LiveKit Configuration](https://docs.opentalk.eu/admin/controller/core/livekit/)
+- [Database Configuration](https://docs.opentalk.eu/admin/controller/core/database/)
