@@ -28,3 +28,7 @@ OpenTalk is a comprehensive video conferencing solution that consists of several
 - [Prerequisites](prerequisites.md) - What you need before you start
 - [Quick Start](quick-start.md) - Get a basic setup running quickly
 - [Production Setup](production-setup.md) - Guidelines for production deployments
+- [DNS Configuration](dns-configuration.md) - Setting up DNS records
+- [Traefik Setup](traefik-setup.md) - Configuring Traefik as a reverse proxy
+- [Hetzner Deployment](hetzner-deployment.md) - Detailed guide for deploying on Hetzner Cloud
+- [Post-Installation](post-installation.md) - Steps after successful installation
