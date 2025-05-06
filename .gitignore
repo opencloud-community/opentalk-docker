@@ -1,0 +1,69 @@
+# Environment variables
+.env
+*.env
+my-secrets.env
+
+# Local configuration files
+/config/*.toml
+/config/*.yaml
+!/config/*.sample
+!/config/*.example
+
+# Logs
+*.log
+logs/
+
+# Runtime data
+/data/
+/tmp/
+
+# Certificates and keys
+*.pem
+*.key
+*.crt
+*.csr
+*.srl
+
+# Caddy data
+/caddy/data/
+/caddy/config/
+
+# macOS specific files
+.DS_Store
+.AppleDouble
+.LSOverride
+Icon
+._*
+.DocumentRevisions-V100
+.fseventsd
+.Spotlight-V100
+.TemporaryItems
+.Trashes
+.VolumeIcon.icns
+.com.apple.timemachine.donotpresent
+
+# Windows specific files
+Thumbs.db
+Thumbs.db:encryptable
+ehthumbs.db
+ehthumbs_vista.db
+*.stackdump
+[Dd]esktop.ini
+$RECYCLE.BIN/
+
+# Editor directories and files
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# Docker volumes
+postgres_data/
+redis_data/
+minio_data/
+rabbitmq_data/
+recorder_data/
+keycloak_data/
+traefik-certificates/
+traefik-logs/
