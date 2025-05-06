@@ -40,6 +40,21 @@ Comprehensive documentation is available in the [docs](./docs) directory:
 - [Configuration](./docs/configuration/README.md)
   - [Official Docker Images](./docs/configuration/official-images.md)
 
+### Official Documentation Reference
+
+This repository complements the official OpenTalk documentation. For detailed configuration options and component-specific documentation, please refer to the official resources:
+
+| Component     | Docker Setup (this repo)       | Official Documentation                      |
+|---------------|--------------------------------|---------------------------------------------|
+| Controller    | [Docker Setup](./docs/components/controller.md) | [Official Docs](https://docs.opentalk.eu/admin/controller/) |
+| Obelisk       | [Docker Setup](./docs/components/) | [Official Docs](https://docs.opentalk.eu/admin/obelisk/) |
+| Recorder      | [Docker Setup](./docs/components/) | [Official Docs](https://docs.opentalk.eu/admin/recorder/) |
+| SMTP Mailer   | [Docker Setup](./docs/components/) | [Official Docs](https://docs.opentalk.eu/admin/smtp-mailer/) |
+| Etherpad      | [Docker Setup](./docs/components/) | [Official Docs](https://docs.opentalk.eu/admin/controller/advanced/additional_services/etherpad/) |
+| Spacedeck     | [Docker Setup](./docs/components/) | [Official Docs](https://docs.opentalk.eu/admin/controller/advanced/additional_services/spacedeck/) |
+
+For the official deployment repository, see: [gitlab.opencode.de/opentalk/ot-setup](https://gitlab.opencode.de/opentalk/ot-setup)
+
 ## Quick Start
 
 1. Clone this repository:
